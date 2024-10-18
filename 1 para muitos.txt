@@ -1,0 +1,54 @@
+FK de usuario com grupousuario
+
+-- NO PHPMYADMIN --
+1. Criar a tabela grupousuario (id, nome)
+2. Criar a coluna grupousuario_id na tabela usuario
+3. Criar a relação de FK entre as tabelas. 
+	1. Clicar em 'Estrutura' na tabela 'usuario'
+	2. Clicar na aba 'Visão de Relação'
+	3. Criar a relação entre as tabelas com as informações a seguir:
+		- Propriedades da restrição = FK_GRUPOUSUARIO
+		- Coluna = grupousuario_id
+		- Tabela = grupousuario
+		- Coluna - id
+
+-- NO PHP --
+4. Adicionar o campo de combobox do grupo de usuário no "usuario-cadastrar.php" buscando os grupos.
+
+<select class="form-select" name="grupousuario_id">
+  <option selected>-- Selecione --</option>
+  <?php
+     $sql = "select * from grupousuario order by nome";
+     $resultado = mysqli_query($conexao, $sql);
+     
+     while ($linha = mysqli_fetch_array($resultado)){
+       $id = $linha['id'];
+       $nome = $linha['nome'];
+       echo "<option value='$id'>$nome</option>";
+     }
+  ?>
+</select>
+
+5. Salvar no BD o grupo no cadastro de usuário, recebendo a variável no topo do arquivo e mudando a SQL.
+$grupousuario_id = $_POST['grupousuario_id'];
+
+$sql = "insert into usuario (nome, email, senha, grupousuario_id) 
+        values ('$nome', '$email', '$senha', $grupousuario_id)";
+    
+
+6. Mostrando o grupo no usuario-listar.php. Para isso, é preciso adicionar uma nova coluna de "Grupo de Usuário" na listagem e colocar o código abaixo:
+
+<td>
+    <?php 
+    if ($linha['grupousuario_id'] != '') {
+        $sqlGrupo = "select nome from grupousuario 
+                where id = " . $linha['grupousuario_id'];
+
+        $resultadoGrupo = mysqli_query($conexao, $sqlGrupo);
+        $linhaGrupo = mysqli_fetch_array($resultadoGrupo);
+        echo $linhaGrupo['nome'];
+    }
+    ?>
+</td>
+
+
